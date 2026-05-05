@@ -76,6 +76,19 @@
       max-width: 900px;
       height: 300px;
       margin-top: 20px;
+      transition: transform 0.1s;
+    }
+
+    .shake {
+      animation: shake 0.25s;
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-8px); }
+      50% { transform: translateX(8px); }
+      75% { transform: translateX(-8px); }
+      100% { transform: translateX(0); }
     }
   </style>
 </head>
@@ -206,10 +219,10 @@
       dessinerClef();
 
       message.textContent = "";
-
-      const listeNotes = clefActuelle === "sol" ? notesSol : notesFa;
       notesGenerees = [];
       noteActuelle = 0;
+
+      const listeNotes = clefActuelle === "sol" ? notesSol : notesFa;
 
       for (let i = 0; i < 10; i++) {
         const note = listeNotes[Math.floor(Math.random() * listeNotes.length)];
@@ -235,6 +248,7 @@
       if (reponse === bonneNote) {
         score++;
         scoreElement.textContent = score;
+
         message.textContent = "✅ Bonne réponse !";
         message.style.color = "#16a34a";
 
@@ -242,16 +256,27 @@
 
         if (noteActuelle >= notesGenerees.length) {
           message.textContent = "🎉 Portée terminée ! Nouvelle portée générée.";
-          genererPortee();
+          setTimeout(genererPortee, 800);
         } else {
           afficherNotes();
         }
       } else {
         score = 0;
         scoreElement.textContent = score;
-        message.textContent = "❌ Mauvaise réponse. Le score revient à zéro.";
+
+        message.textContent = "❌ Mauvaise réponse ! Essaie encore.";
         message.style.color = "#dc2626";
-        genererPortee();
+
+        if (navigator.vibrate) {
+          navigator.vibrate(200);
+        }
+
+        svg.classList.remove("shake");
+        void svg.offsetWidth;
+        svg.classList.add("shake");
+
+        // La portée ne change pas.
+        // La même note reste sélectionnée.
       }
     }
 
