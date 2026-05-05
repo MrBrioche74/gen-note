@@ -2,80 +2,162 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Quiz de notes</title>
+
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #eef2ff, #fdf2f8);
+      font-family: "Segoe UI", Arial, sans-serif;
       min-height: 100vh;
       text-align: center;
-      color: #222;
+      color: #111827;
+      background:
+        radial-gradient(circle at top left, #ddd6fe, transparent 35%),
+        radial-gradient(circle at bottom right, #fbcfe8, transparent 35%),
+        linear-gradient(135deg, #f8fafc, #eef2ff);
     }
 
     .container {
-      max-width: 1000px;
+      max-width: 1100px;
       margin: auto;
-      padding: 30px;
+      padding: 35px 20px;
     }
 
-    h1 {
-      font-size: 42px;
+    .title {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 14px;
       margin-bottom: 10px;
     }
 
-    .score {
-      font-size: 24px;
-      font-weight: bold;
-      margin: 15px;
+    .icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #4f46e5, #ec4899);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      box-shadow: 0 12px 25px rgba(79, 70, 229, 0.3);
     }
 
-    .card {
+    h1 {
+      font-size: 44px;
+      margin: 0;
+      letter-spacing: -1px;
+    }
+
+    .subtitle {
+      color: #6b7280;
+      font-size: 18px;
+      margin-bottom: 18px;
+    }
+
+    .score-box {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
       background: white;
-      border-radius: 24px;
-      padding: 25px;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.12);
-      margin-top: 20px;
+      padding: 10px 20px;
+      border-radius: 999px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+
+    .score-number {
+      background: #4f46e5;
+      color: white;
+      min-width: 42px;
+      padding: 4px 12px;
+      border-radius: 999px;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 28px;
     }
 
     button {
       border: none;
-      border-radius: 14px;
-      padding: 12px 20px;
-      margin: 8px;
-      font-size: 17px;
+      border-radius: 999px;
+      padding: 13px 22px;
+      font-size: 16px;
+      font-weight: 600;
       cursor: pointer;
-      background: #4f46e5;
+      transition: 0.2s ease;
+    }
+
+    .control-btn {
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
       color: white;
-      transition: 0.2s;
+      box-shadow: 0 10px 22px rgba(79, 70, 229, 0.25);
     }
 
-    button:hover {
+    .control-btn:hover {
       transform: translateY(-2px);
-      background: #3730a3;
+      box-shadow: 0 14px 28px rgba(79, 70, 229, 0.35);
     }
 
-    .note-btn {
-      background: #111827;
-      min-width: 70px;
+    .card {
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(10px);
+      border-radius: 32px;
+      padding: 30px 25px 26px;
+      box-shadow: 0 25px 70px rgba(31, 41, 55, 0.16);
+      border: 1px solid rgba(255,255,255,0.7);
     }
 
-    .note-btn:hover {
-      background: #000;
-    }
-
-    .message {
-      font-size: 22px;
-      font-weight: bold;
-      min-height: 32px;
-      margin-top: 15px;
+    .staff-wrapper {
+      background: linear-gradient(180deg, #ffffff, #f9fafb);
+      border-radius: 24px;
+      padding: 20px;
+      border: 1px solid #eef2f7;
     }
 
     svg {
       width: 100%;
       max-width: 900px;
       height: 300px;
-      margin-top: 20px;
+    }
+
+    .answers {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .note-btn {
+      min-width: 78px;
+      background: #111827;
+      color: white;
+      box-shadow: 0 8px 18px rgba(17, 24, 39, 0.2);
+    }
+
+    .note-btn:hover {
+      transform: translateY(-2px);
+      background: #374151;
+    }
+
+    .message {
+      font-size: 22px;
+      font-weight: 800;
+      min-height: 34px;
+      margin-top: 22px;
     }
 
     .shake {
@@ -89,23 +171,60 @@
       75% { transform: translateX(-10px); }
       100% { transform: translateX(0); }
     }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 32px;
+      }
+
+      .icon {
+        width: 44px;
+        height: 44px;
+        font-size: 26px;
+      }
+
+      .card {
+        padding: 20px 12px;
+      }
+
+      .staff-wrapper {
+        padding: 10px;
+      }
+
+      .note-btn {
+        min-width: 64px;
+        padding: 12px 16px;
+      }
+    }
   </style>
 </head>
 
 <body>
   <div class="container">
-    <h1>🎼 Quiz de notes</h1>
+    <div class="title">
+      <div class="icon">🎼</div>
+      <h1>Quiz de notes</h1>
+    </div>
 
-    <div class="score">Score : <span id="score">0</span></div>
+    <div class="subtitle">Trouve la note rouge pour faire monter ton score</div>
 
-    <button onclick="changerClef('sol')">Clef de sol</button>
-    <button onclick="changerClef('fa')">Clef de fa</button>
-    <button onclick="genererPortee()">Nouvelle portée</button>
+    <div class="score-box">
+      Score
+      <span class="score-number" id="score">0</span>
+    </div>
+
+    <div class="controls">
+      <button class="control-btn" onclick="changerClef('sol')">Clef de sol</button>
+      <button class="control-btn" onclick="changerClef('fa')">Clef de fa</button>
+      <button class="control-btn" onclick="genererPortee()">Nouvelle portée</button>
+    </div>
 
     <div class="card">
-      <svg id="partition" viewBox="0 0 900 300"></svg>
+      <div class="staff-wrapper">
+        <svg id="partition" viewBox="0 0 900 300"></svg>
+      </div>
 
-      <div>
+      <div class="answers">
         <button class="note-btn" onclick="repondre('Do')">Do</button>
         <button class="note-btn" onclick="repondre('Ré')">Ré</button>
         <button class="note-btn" onclick="repondre('Mi')">Mi</button>
@@ -179,8 +298,9 @@
           y1: departY + i * espace,
           x2: 840,
           y2: departY + i * espace,
-          stroke: "black",
-          "stroke-width": 2
+          stroke: "#111827",
+          "stroke-width": 2.2,
+          "stroke-linecap": "round"
         });
       }
     }
@@ -188,18 +308,21 @@
     function dessinerClef() {
       creerElement("text", {
         x: 25,
-        y: 155,
-        "font-size": 72
+        y: 156,
+        "font-size": 76,
+        fill: "#111827"
       }).textContent = clefActuelle === "sol" ? "𝄞" : "𝄢";
     }
 
     function dessinerNote(x, y, active) {
+      const couleur = active ? "#ef4444" : "#111827";
+
       creerElement("ellipse", {
         cx: x,
         cy: y,
         rx: 13,
         ry: 9,
-        fill: active ? "#ef4444" : "black",
+        fill: couleur,
         transform: `rotate(-20 ${x} ${y})`
       });
 
@@ -208,8 +331,9 @@
         y1: y,
         x2: x + 11,
         y2: y - 55,
-        stroke: active ? "#ef4444" : "black",
-        "stroke-width": 2
+        stroke: couleur,
+        "stroke-width": 2.4,
+        "stroke-linecap": "round"
       });
     }
 
@@ -278,8 +402,6 @@
 
         vibrationErreur();
         animationErreur();
-
-        // La portée ne change pas.
       }
     }
 
