@@ -76,7 +76,6 @@
       max-width: 900px;
       height: 300px;
       margin-top: 20px;
-      transition: transform 0.1s;
     }
 
     .shake {
@@ -215,9 +214,6 @@
     }
 
     function genererPortee() {
-      dessinerPortee();
-      dessinerClef();
-
       message.textContent = "";
       notesGenerees = [];
       noteActuelle = 0;
@@ -268,20 +264,22 @@
         message.style.color = "#dc2626";
 
         if (navigator.vibrate) {
-          navigator.vibrate(200);
+          navigator.vibrate(0);
+          setTimeout(() => {
+            navigator.vibrate([120, 40, 120]);
+          }, 20);
         }
 
         svg.classList.remove("shake");
         void svg.offsetWidth;
         svg.classList.add("shake");
-
-        // La portée ne change pas.
-        // La même note reste sélectionnée.
       }
     }
 
     function changerClef(clef) {
       clefActuelle = clef;
+      score = 0;
+      scoreElement.textContent = score;
       genererPortee();
     }
 
