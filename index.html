@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Révision des notes</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 30px;
+    }
+
+    button {
+      font-size: 18px;
+      padding: 10px 20px;
+      margin: 10px;
+      cursor: pointer;
+    }
+
+    svg {
+      border: 1px solid #ddd;
+      margin-top: 20px;
+      background: white;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Réviser les notes</h1>
+
+  <button onclick="genererPortee('sol')">Générer en clef de sol</button>
+  <button onclick="genererPortee('fa')">Générer en clef de fa</button>
+
+  <br>
+
+  <svg id="partition" width="900" height="300"></svg>
+
+  <script>
+    const svg = document.getElementById("partition");
+
+    const notesSol = [
+      { nom: "Do", y: 170 },
+      { nom: "Ré", y: 160 },
+      { nom: "Mi", y: 150 },
+      { nom: "Fa", y: 140 },
+      { nom: "Sol", y: 130 },
+      { nom: "La", y: 120 },
+      { nom: "Si", y: 110 },
+      { nom: "Do", y: 100 },
+      { nom: "Ré", y: 90 },
+      { nom: "Mi", y: 80 }
+    ];
+
+    const notesFa = [
+      { nom: "Do", y: 150 },
+      { nom: "Ré", y: 140 },
+      { nom: "Mi", y: 130 },
+      { nom: "Fa", y: 120 },
+      { nom: "Sol", y: 110 },
+      { nom: "La", y: 100 },
+      { nom: "Si", y: 90 },
+      { nom: "Do", y: 80 },
+      { nom: "Ré", y: 70 },
+      { nom: "Mi", y: 60 }
+    ];
+
+    function creerElement(type, attributs) {
+      const element = document.createElementNS("http://www.w3.org/2000/svg", type);
+
+      for (let attr in attributs) {
+        element.setAttribute(attr, attributs[attr]);
+      }
+
+      svg.appendChild(element);
+      return element;
+    }
+
+    function dessinerPortee() {
+      svg.innerHTML = "";
+
+      const departY = 90;
+      const espace = 20;
+
+      for (let i = 0; i < 5; i++) {
+        creerElement("line", {
+          x1: 80,
+          y1: departY + i * espace,
+          x2: 820,
+          y2: departY + i * espace,
+          stroke: "black",
+          "stroke-width": 2
+        });
+      }
+    }
+
+    function dessinerClef(type) {
+      creerElement("text", {
+        x: 25,
+        y: 155,
+        "font-size": 70
+      }).textContent = type === "sol" ? "𝄞" : "𝄢";
+    }
+
+    function dessinerNote(x, y, nom) {
+      creerElement("ellipse", {
+        cx: x,
+        cy: y,
+        rx: 12,
+        ry: 9,
+        fill: "black",
+        transform: `rotate(-20 ${x} ${y})`
+      });
+
+      creerElement("line", {
+        x1: x + 10,
+        y1: y,
+        x2: x + 10,
+        y2: y - 55,
+        stroke: "black",
+        "stroke-width": 2
+      });
+
+      creerElement("text", {
+        x: x - 12,
+        y: 245,
+        "font-size": 16
+      }).textContent = nom;
+    }
+
+    function genererPortee(clef) {
+      dessinerPortee();
+      dessinerClef(clef);
+
+      const listeNotes = clef === "sol" ? notesSol : notesFa;
+
+      for (let i = 0; i < 10; i++) {
+        const note = listeNotes[Math.floor(Math.random() * listeNotes.length)];
+        const x = 120 + i * 70;
+
+        dessinerNote(x, note.y, note.nom);
+      }
+    }
+
+    genererPortee("sol");
+  </script>
+
+</body>
+</html>
