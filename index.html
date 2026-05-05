@@ -2,43 +2,136 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Révision des notes</title>
+  <title>Quiz de notes</title>
   <style>
     body {
+      margin: 0;
       font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #eef2ff, #fdf2f8);
+      min-height: 100vh;
       text-align: center;
+      color: #222;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
       padding: 30px;
     }
 
+    h1 {
+      font-size: 42px;
+      margin-bottom: 10px;
+    }
+
+    .score {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 15px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 24px;
+      padding: 25px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+      margin-top: 20px;
+    }
+
     button {
-      font-size: 18px;
-      padding: 10px 20px;
-      margin: 10px;
+      border: none;
+      border-radius: 14px;
+      padding: 12px 20px;
+      margin: 8px;
+      font-size: 17px;
       cursor: pointer;
+      background: #4f46e5;
+      color: white;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      background: #3730a3;
+    }
+
+    .note-btn {
+      background: #111827;
+      min-width: 70px;
+    }
+
+    .note-btn:hover {
+      background: #000;
+    }
+
+    .message {
+      font-size: 22px;
+      font-weight: bold;
+      min-height: 32px;
+      margin-top: 15px;
     }
 
     svg {
-      border: 1px solid #ddd;
+      width: 100%;
+      max-width: 900px;
+      height: 300px;
       margin-top: 20px;
-      background: white;
     }
   </style>
 </head>
+
 <body>
+  <div class="container">
+    <h1>🎼 Quiz de notes</h1>
 
-  <h1>Réviser les notes</h1>
+    <div class="score">Score : <span id="score">0</span></div>
 
-  <button onclick="genererPortee('sol')">Générer en clef de sol</button>
-  <button onclick="genererPortee('fa')">Générer en clef de fa</button>
+    <button onclick="changerClef('sol')">Clef de sol</button>
+    <button onclick="changerClef('fa')">Clef de fa</button>
+    <button onclick="genererPortee()">Nouvelle portée</button>
 
-  <br>
+    <div class="card">
+      <svg id="partition" viewBox="0 0 900 300"></svg>
 
-  <svg id="partition" width="900" height="300"></svg>
+      <div>
+        <button class="note-btn" onclick="repondre('Do')">Do</button>
+        <button class="note-btn" onclick="repondre('Ré')">Ré</button>
+        <button class="note-btn" onclick="repondre('Mi')">Mi</button>
+        <button class="note-btn" onclick="repondre('Fa')">Fa</button>
+        <button class="note-btn" onclick="repondre('Sol')">Sol</button>
+        <button class="note-btn" onclick="repondre('La')">La</button>
+        <button class="note-btn" onclick="repondre('Si')">Si</button>
+      </div>
+
+      <div class="message" id="message"></div>
+    </div>
+  </div>
 
   <script>
     const svg = document.getElementById("partition");
+    const scoreElement = document.getElementById("score");
+    const message = document.getElementById("message");
+
+    let clefActuelle = "sol";
+    let score = 0;
+    let notesGenerees = [];
+    let noteActuelle = 0;
 
     const notesSol = [
+      { nom: "Do", y: 190 },
+      { nom: "Ré", y: 180 },
+      { nom: "Mi", y: 170 },
+      { nom: "Fa", y: 160 },
+      { nom: "Sol", y: 150 },
+      { nom: "La", y: 140 },
+      { nom: "Si", y: 130 },
+      { nom: "Do", y: 120 },
+      { nom: "Ré", y: 110 },
+      { nom: "Mi", y: 100 },
+      { nom: "Fa", y: 90 }
+    ];
+
+    const notesFa = [
       { nom: "Do", y: 170 },
       { nom: "Ré", y: 160 },
       { nom: "Mi", y: 150 },
@@ -49,19 +142,6 @@
       { nom: "Do", y: 100 },
       { nom: "Ré", y: 90 },
       { nom: "Mi", y: 80 }
-    ];
-
-    const notesFa = [
-      { nom: "Do", y: 150 },
-      { nom: "Ré", y: 140 },
-      { nom: "Mi", y: 130 },
-      { nom: "Fa", y: 120 },
-      { nom: "Sol", y: 110 },
-      { nom: "La", y: 100 },
-      { nom: "Si", y: 90 },
-      { nom: "Do", y: 80 },
-      { nom: "Ré", y: 70 },
-      { nom: "Mi", y: 60 }
     ];
 
     function creerElement(type, attributs) {
@@ -83,9 +163,9 @@
 
       for (let i = 0; i < 5; i++) {
         creerElement("line", {
-          x1: 80,
+          x1: 90,
           y1: departY + i * espace,
-          x2: 820,
+          x2: 840,
           y2: departY + i * espace,
           stroke: "black",
           "stroke-width": 2
@@ -93,56 +173,94 @@
       }
     }
 
-    function dessinerClef(type) {
+    function dessinerClef() {
       creerElement("text", {
         x: 25,
         y: 155,
-        "font-size": 70
-      }).textContent = type === "sol" ? "𝄞" : "𝄢";
+        "font-size": 72
+      }).textContent = clefActuelle === "sol" ? "𝄞" : "𝄢";
     }
 
-    function dessinerNote(x, y, nom) {
+    function dessinerNote(x, y, active) {
       creerElement("ellipse", {
         cx: x,
         cy: y,
-        rx: 12,
+        rx: 13,
         ry: 9,
-        fill: "black",
+        fill: active ? "#ef4444" : "black",
         transform: `rotate(-20 ${x} ${y})`
       });
 
       creerElement("line", {
-        x1: x + 10,
+        x1: x + 11,
         y1: y,
-        x2: x + 10,
+        x2: x + 11,
         y2: y - 55,
-        stroke: "black",
+        stroke: active ? "#ef4444" : "black",
         "stroke-width": 2
       });
-
-      creerElement("text", {
-        x: x - 12,
-        y: 245,
-        "font-size": 16
-      }).textContent = nom;
     }
 
-    function genererPortee(clef) {
+    function genererPortee() {
       dessinerPortee();
-      dessinerClef(clef);
+      dessinerClef();
 
-      const listeNotes = clef === "sol" ? notesSol : notesFa;
+      message.textContent = "";
+
+      const listeNotes = clefActuelle === "sol" ? notesSol : notesFa;
+      notesGenerees = [];
+      noteActuelle = 0;
 
       for (let i = 0; i < 10; i++) {
         const note = listeNotes[Math.floor(Math.random() * listeNotes.length)];
-        const x = 120 + i * 70;
+        notesGenerees.push(note);
+      }
 
-        dessinerNote(x, note.y, note.nom);
+      afficherNotes();
+    }
+
+    function afficherNotes() {
+      dessinerPortee();
+      dessinerClef();
+
+      for (let i = 0; i < notesGenerees.length; i++) {
+        const x = 140 + i * 70;
+        dessinerNote(x, notesGenerees[i].y, i === noteActuelle);
       }
     }
 
-    genererPortee("sol");
-  </script>
+    function repondre(reponse) {
+      const bonneNote = notesGenerees[noteActuelle].nom;
 
+      if (reponse === bonneNote) {
+        score++;
+        scoreElement.textContent = score;
+        message.textContent = "✅ Bonne réponse !";
+        message.style.color = "#16a34a";
+
+        noteActuelle++;
+
+        if (noteActuelle >= notesGenerees.length) {
+          message.textContent = "🎉 Portée terminée ! Nouvelle portée générée.";
+          genererPortee();
+        } else {
+          afficherNotes();
+        }
+      } else {
+        score = 0;
+        scoreElement.textContent = score;
+        message.textContent = "❌ Mauvaise réponse. Le score revient à zéro.";
+        message.style.color = "#dc2626";
+        genererPortee();
+      }
+    }
+
+    function changerClef(clef) {
+      clefActuelle = clef;
+      genererPortee();
+    }
+
+    genererPortee();
+  </script>
 </body>
 </html>
