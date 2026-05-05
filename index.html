@@ -84,9 +84,9 @@
 
     @keyframes shake {
       0% { transform: translateX(0); }
-      25% { transform: translateX(-8px); }
-      50% { transform: translateX(8px); }
-      75% { transform: translateX(-8px); }
+      25% { transform: translateX(-10px); }
+      50% { transform: translateX(10px); }
+      75% { transform: translateX(-10px); }
       100% { transform: translateX(0); }
     }
   </style>
@@ -238,6 +238,19 @@
       }
     }
 
+    function vibrationErreur() {
+      if ("vibrate" in navigator) {
+        navigator.vibrate(0);
+        navigator.vibrate([150, 80, 150]);
+      }
+    }
+
+    function animationErreur() {
+      svg.classList.remove("shake");
+      void svg.offsetWidth;
+      svg.classList.add("shake");
+    }
+
     function repondre(reponse) {
       const bonneNote = notesGenerees[noteActuelle].nom;
 
@@ -263,16 +276,10 @@
         message.textContent = "❌ Mauvaise réponse ! Essaie encore.";
         message.style.color = "#dc2626";
 
-        if (navigator.vibrate) {
-          navigator.vibrate(0);
-          setTimeout(() => {
-            navigator.vibrate([120, 40, 120]);
-          }, 20);
-        }
+        vibrationErreur();
+        animationErreur();
 
-        svg.classList.remove("shake");
-        void svg.offsetWidth;
-        svg.classList.add("shake");
+        // La portée ne change pas.
       }
     }
 
