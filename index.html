@@ -61,6 +61,14 @@
       margin-bottom: 18px;
     }
 
+    .score-row {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
     .score-box {
       display: inline-flex;
       align-items: center;
@@ -71,7 +79,6 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.08);
       font-size: 22px;
       font-weight: 700;
-      margin-bottom: 18px;
     }
 
     .score-number {
@@ -80,6 +87,17 @@
       min-width: 42px;
       padding: 4px 12px;
       border-radius: 999px;
+    }
+
+    .record-animation {
+      animation: recordPop 0.45s ease;
+    }
+
+    @keyframes recordPop {
+      0% { transform: scale(1); }
+      40% { transform: scale(1.25); background: #f59e0b; }
+      70% { transform: scale(0.95); }
+      100% { transform: scale(1); }
     }
 
     .controls {
@@ -191,6 +209,10 @@
         padding: 10px;
       }
 
+      .score-box {
+        font-size: 18px;
+      }
+
       .note-btn {
         min-width: 64px;
         padding: 12px 16px;
@@ -208,9 +230,16 @@
 
     <div class="subtitle">Trouve la note rouge pour faire monter ton score</div>
 
-    <div class="score-box">
-      Score
-      <span class="score-number" id="score">0</span>
+    <div class="score-row">
+      <div class="score-box">
+        Score
+        <span class="score-number" id="score">0</span>
+      </div>
+
+      <div class="score-box">
+        Highest
+        <span class="score-number" id="highscore">0</span>
+      </div>
     </div>
 
     <div class="controls">
@@ -241,6 +270,7 @@
   <script>
     const svg = document.getElementById("partition");
     const scoreElement = document.getElementById("score");
+    const highscoreElement = document.getElementById("highscore");
     const message = document.getElementById("message");
 
     const staffTop = 90;
@@ -249,8 +279,11 @@
 
     let clefActuelle = "sol";
     let score = 0;
+    let highscore = Number(localStorage.getItem("highscoreNotes")) || 0;
     let notesGenerees = [];
     let noteActuelle = 0;
+
+    highscoreElement.textContent = highscore;
 
     const notesSol = [
       { nom: "Do", y: 190 },
@@ -414,12 +447,28 @@
       svg.classList.add("shake");
     }
 
+    function animationRecord() {
+      highscoreElement.classList.remove("record-animation");
+      void highscoreElement.offsetWidth;
+      highscoreElement.classList.add("record-animation");
+    }
+
+    function verifierHighscore() {
+      if (score > highscore) {
+        highscore = score;
+        highscoreElement.textContent = highscore;
+        localStorage.setItem("highscoreNotes", highscore);
+        animationRecord();
+      }
+    }
+
     function repondre(reponse) {
       const bonneNote = notesGenerees[noteActuelle].nom;
 
       if (reponse === bonneNote) {
         score++;
         scoreElement.textContent = score;
+        verifierHighscore();
 
         message.textContent = "✅ Bonne réponse !";
         message.style.color = "#16a34a";
