@@ -243,6 +243,10 @@
     const scoreElement = document.getElementById("score");
     const message = document.getElementById("message");
 
+    const staffTop = 90;
+    const staffBottom = 170;
+    const espace = 20;
+
     let clefActuelle = "sol";
     let score = 0;
     let notesGenerees = [];
@@ -259,20 +263,23 @@
       { nom: "Do", y: 120 },
       { nom: "Ré", y: 110 },
       { nom: "Mi", y: 100 },
-      { nom: "Fa", y: 90 }
+      { nom: "Fa", y: 90 },
+      { nom: "Sol", y: 80 }
     ];
 
     const notesFa = [
-      { nom: "Do", y: 170 },
-      { nom: "Ré", y: 160 },
-      { nom: "Mi", y: 150 },
-      { nom: "Fa", y: 140 },
-      { nom: "Sol", y: 130 },
-      { nom: "La", y: 120 },
-      { nom: "Si", y: 110 },
-      { nom: "Do", y: 100 },
-      { nom: "Ré", y: 90 },
-      { nom: "Mi", y: 80 }
+      { nom: "Sol", y: 190 },
+      { nom: "La", y: 180 },
+      { nom: "Si", y: 170 },
+      { nom: "Do", y: 160 },
+      { nom: "Ré", y: 150 },
+      { nom: "Mi", y: 140 },
+      { nom: "Fa", y: 130 },
+      { nom: "Sol", y: 120 },
+      { nom: "La", y: 110 },
+      { nom: "Si", y: 100 },
+      { nom: "Do", y: 90 },
+      { nom: "Ré", y: 80 }
     ];
 
     function creerElement(type, attributs) {
@@ -289,15 +296,12 @@
     function dessinerPortee() {
       svg.innerHTML = "";
 
-      const departY = 90;
-      const espace = 20;
-
       for (let i = 0; i < 5; i++) {
         creerElement("line", {
           x1: 90,
-          y1: departY + i * espace,
+          y1: staffTop + i * espace,
           x2: 840,
-          y2: departY + i * espace,
+          y2: staffTop + i * espace,
           stroke: "#111827",
           "stroke-width": 2.2,
           "stroke-linecap": "round"
@@ -314,8 +318,43 @@
       }).textContent = clefActuelle === "sol" ? "𝄞" : "𝄢";
     }
 
+    function dessinerTraitsSupplementaires(x, y, couleur) {
+      const largeurTrait = 38;
+      const demiLargeur = largeurTrait / 2;
+
+      if (y > staffBottom) {
+        for (let ligne = staffBottom + espace; ligne <= y; ligne += espace) {
+          creerElement("line", {
+            x1: x - demiLargeur,
+            y1: ligne,
+            x2: x + demiLargeur,
+            y2: ligne,
+            stroke: couleur,
+            "stroke-width": 2.2,
+            "stroke-linecap": "round"
+          });
+        }
+      }
+
+      if (y < staffTop) {
+        for (let ligne = staffTop - espace; ligne >= y; ligne -= espace) {
+          creerElement("line", {
+            x1: x - demiLargeur,
+            y1: ligne,
+            x2: x + demiLargeur,
+            y2: ligne,
+            stroke: couleur,
+            "stroke-width": 2.2,
+            "stroke-linecap": "round"
+          });
+        }
+      }
+    }
+
     function dessinerNote(x, y, active) {
       const couleur = active ? "#ef4444" : "#111827";
+
+      dessinerTraitsSupplementaires(x, y, couleur);
 
       creerElement("ellipse", {
         cx: x,
